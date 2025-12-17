@@ -17,7 +17,8 @@
         <p>
           <a href="{% url 'review_create' item.object.id %}">Écrire une critique</a> |
           <a href="{% url 'ticket_edit' item.object.id %}">Modifier</a> |
-          <a href="{% url 'ticket_delete' item.object.id %}">Supprimer</a>
+          <a href="{% url 'ticket_delete' item.object.id %}">Supprimer</a> |
+          <a href="{% url 'ticket_create' %}">Créer un billet</a>
         </p>
       </article>
     {% elif item.type == "REVIEW" %}

@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
+
 
 from .models import Ticket, Review
 from .forms import TicketForm, ReviewForm
@@ -20,7 +20,7 @@ def ticket_create(request):
     else:
         form = TicketForm()
     return render(
-        request, "reviews/ticket_form.html", {"form": form, "title": "Créer un ticket"}
+        request, "reviews/ticket_form.html", {"form": form, "title": "Créer un billet"}
     )
 
 
@@ -39,7 +39,7 @@ def ticket_edit(request, ticket_id):
     return render(
         request,
         "reviews/ticket_form.html",
-        {"form": form, "title": "Modifier le ticket"},
+        {"form": form, "title": "Modifier le billet"},
     )
 
 
@@ -128,20 +128,39 @@ def feed(request):
         "followed_user_id", flat=True
     )
 
-    # Tickets : mes tickets OU tickets des gens que je suis
-    tickets = Ticket.objects.filter(Q(user=user) | Q(user__in=followed_users_ids))
+    # TICKETS
 
-    # Reviews : mes reviews OU reviews des gens que je suis OU reviews sur mes tickets
-    reviews = Review.objects.filter(
-        Q(user=user) | Q(user__in=followed_users_ids) | Q(ticket__user=user)
-    ).distinct()  # ✅ ici c’est OK car pas de union()
+    tickets_own = Ticket.objects.filter(user=user)
+    tickets_followed = Ticket.objects.filter(user__in=followed_users_ids)
+
+    tickets = tickets_own.union(tickets_followed)
+
+    # REVIEWS
+
+    reviews_own = Review.objects.filter(user=user)
+    reviews_followed = Review.objects.filter(user__in=followed_users_ids)
+    reviews_on_my_tickets = Review.objects.filter(ticket__user=user)
+
+    reviews = reviews_own.union(
+        reviews_followed,
+        reviews_on_my_tickets,
+    )
 
     ticket_items = [
-        {"type": "TICKET", "object": ticket, "time_created": ticket.time_created}
+        {
+            "type": "TICKET",
+            "object": ticket,
+            "time_created": ticket.time_created,
+        }
         for ticket in tickets
     ]
+
     review_items = [
-        {"type": "REVIEW", "object": review, "time_created": review.time_created}
+        {
+            "type": "REVIEW",
+            "object": review,
+            "time_created": review.time_created,
+        }
         for review in reviews
     ]
 
@@ -151,4 +170,8 @@ def feed(request):
         reverse=True,
     )
 
-    return render(request, "reviews/feed.html", {"feed_items": feed_items})
+    return render(
+        request,
+        "reviews/feed.html",
+        {"feed_items": feed_items},
+    )
