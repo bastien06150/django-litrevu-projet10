@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Mes abonnements - LITRevu{% endblock %}
+
+{% block content %}
+<h1>Mes abonnements</h1>
+
+{% if messages %}
+<ul>
+  {% for message in messages %}
+  <li>{{ message }}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+<h2>Suivre un utilisateur</h2>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Suivre</button>
+</form>
+
+<hr />
+
+<h2>Les utilisateurs que je suis</h2>
+<ul>
+  {% for follow in following %}
+  <li>
+    {{ follow.followed_user.username }}
+    <form
+      method="post"
+      action="{% url 'unfollow' follow.id %}"
+      style="display: inline"
+    >
+      {% csrf_token %}
+      <button type="submit">Ne plus suivre</button>
+    </form>
+  </li>
+  {% empty %}
+  <li>Vous ne suivez encore personne.</li>
+  {% endfor %}
+</ul>
+
+<hr />
+
+<h2>Les utilisateurs qui me suivent</h2>
+<ul>
+  {% for follow in followers %}
+  <li>{{ follow.user.username }}</li>
+  {% empty %}
+  <li>Personne ne vous suit pour le moment.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

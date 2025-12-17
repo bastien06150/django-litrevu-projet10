@@ -1,0 +1,15 @@
+{% extends "base.html" %} {% block title %}{{ title }} - LITRevu{% endblock %}
+{% block content %}
+<h1>{{ title }}</h1>
+
+<p>
+  Es-tu sûr de vouloir supprimer la critique du billet :
+  <strong>{{ ticket.title }}</strong> ?
+</p>
+
+<form method="post">
+  {% csrf_token %}
+  <button type="submit">Confirmer</button>
+  <a href="{% url 'home' %}">Annuler</a>
+</form>
+{% endblock %}

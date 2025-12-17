@@ -1,0 +1,11 @@
+{% extends "base.html" %} {% block title %}{{ title }} - LITRevu{% endblock %}
+{% block content %}
+<h1>{{ title }}</h1>
+
+<p>Pour le billet : <strong>{{ ticket.title }}</strong></p>
+
+<form method="post">
+  {% csrf_token %} {{ form.as_p }}
+  <button type="submit">Enregistrer</button>
+</form>
+{% endblock %}

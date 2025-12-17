@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Mon flux - LITRevu{% endblock %}
+
+{% block content %}
+<h1>Mon flux</h1>
+
+{% if feed_items %}
+  {% for item in feed_items %}
+    {% if item.type == "TICKET" %}
+      <article style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
+        <h2>Billet</h2>
+        <p><strong>{{ item.object.title }}</strong></p>
+        <p>par {{ item.object.user.username }} – {{ item.time_created }}</p>
+        <p>{{ item.object.description }}</p>
+
+        <p>
+          <a href="{% url 'review_create' item.object.id %}">Écrire une critique</a> |
+          <a href="{% url 'ticket_edit' item.object.id %}">Modifier</a> |
+          <a href="{% url 'ticket_delete' item.object.id %}">Supprimer</a>
+        </p>
+      </article>
+    {% elif item.type == "REVIEW" %}
+      <article style="border: 1px solid #999; padding: 10px; margin-bottom: 10px;">
+        <h2>Critique</h2>
+        <p><strong>{{ item.object.headline }}</strong> (note : {{ item.object.rating }}/5)</p>
+        <p>pour le billet : <em>{{ item.object.ticket.title }}</em></p>
+        <p>par {{ item.object.user.username }} – {{ item.time_created }}</p>
+        <p>{{ item.object.body }}</p>
+
+        <p>
+          <a href="{% url 'review_edit' item.object.id %}">Modifier</a> |
+          <a href="{% url 'review_delete' item.object.id %}">Supprimer</a>
+        </p>
+      </article>
+    {% endif %}
+  {% endfor %}
+{% else %}
+  <p>Il n’y a encore aucun contenu dans votre flux.</p>
+{% endif %}
+{% endblock %}

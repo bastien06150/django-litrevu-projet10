@@ -1,0 +1,17 @@
+{% extends "base.html" %} {% block title %} Supprimer le ticket - LITRevu 
+{% endblock %} 
+
+{% block content %}
+<h1>Supprimer le billet</h1>
+
+<p>
+  Es-tu sûr de vouloir supprimer le ticket :
+  <strong>{{ ticket.title }}</strong> ?
+</p>
+
+<form method="post">
+  {% csrf_token %}
+  <button type="submit">Confirmer la suppression</button>
+  <a href="{% url 'home' %}">Annuler</a>
+</form>
+{% endblock %}

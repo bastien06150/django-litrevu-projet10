@@ -1,0 +1,14 @@
+{% extends "base.html" %} {% block title %}Inscription - LITRevu{% endblock %}
+{% block content %}
+<h1>Inscription</h1>
+
+<form method="post">
+  {% csrf_token %} {{ form.non_field_errors }} {{ form.as_p }}
+  <button type="submit">Créer mon compte</button>
+</form>
+
+<p>
+  Déjà un compte ?
+  <a href="{% url 'login' %}">Se connecter</a>
+</p>
+{% endblock %}
