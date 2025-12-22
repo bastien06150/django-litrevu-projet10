@@ -1,0 +1,16 @@
+<article style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
+  <h2>Billet</h2>
+
+  <p><strong>{{ post.title }}</strong></p>
+  <p>{{ post.description }}</p>
+
+  <p>par {{ post.user.username }} — {{ post.time_created }}</p>
+
+  <p>
+    <a href="{% url 'review_create' post.id %}">Écrire une critique</a>
+    {% if post.user == request.user %}
+      | <a href="{% url 'ticket_edit' post.id %}">Modifier</a>
+      | <a href="{% url 'ticket_delete' post.id %}">Supprimer</a>
+    {% endif %}
+  </p>
+</article>

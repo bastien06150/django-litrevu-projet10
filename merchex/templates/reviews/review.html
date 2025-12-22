@@ -1,0 +1,24 @@
+<article style="border: 1px solid #999; padding: 10px; margin-bottom: 10px;">
+  <h2>Critique</h2>
+
+  <p>
+    <strong>{{ post.headline }}</strong> — Note : {{ post.rating }}/5
+  </p>
+
+  <p>
+    Billet : <em>{{ post.ticket.title }}</em>
+  </p>
+
+  <p>
+    par {{ post.user.username }} — {{ post.time_created }}
+  </p>
+
+  <p>{{ post.body }}</p>
+
+  {% if post.user == request.user %}
+    <p>
+      <a href="{% url 'review_edit' post.id %}">Modifier</a> |
+      <a href="{% url 'review_delete' post.id %}">Supprimer</a>
+    </p>
+  {% endif %}
+</article>

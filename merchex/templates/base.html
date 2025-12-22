@@ -20,7 +20,10 @@
               padding: 0;
             "
           >
-            Se déconnecter
+            Se déconnecter /
+            <a href="{% url 'feed' %}"> Mon flux</a> /
+            <a href="{% url 'follows' %}"> Gérer mes followers</a> 
+            
           </button>
         </form>
         {% else %}

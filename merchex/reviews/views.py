@@ -128,15 +128,16 @@ def feed(request):
         "followed_user_id", flat=True
     )
 
-    # TICKETS
-
+    # --------------------
+    # TICKETS (union)
+    # --------------------
     tickets_own = Ticket.objects.filter(user=user)
     tickets_followed = Ticket.objects.filter(user__in=followed_users_ids)
-
     tickets = tickets_own.union(tickets_followed)
 
-    # REVIEWS
-
+    # --------------------
+    # REVIEWS (union)
+    # --------------------
     reviews_own = Review.objects.filter(user=user)
     reviews_followed = Review.objects.filter(user__in=followed_users_ids)
     reviews_on_my_tickets = Review.objects.filter(ticket__user=user)
@@ -146,32 +147,44 @@ def feed(request):
         reviews_on_my_tickets,
     )
 
-    ticket_items = [
-        {
-            "type": "TICKET",
-            "object": ticket,
-            "time_created": ticket.time_created,
-        }
-        for ticket in tickets
-    ]
+    # --------------------
+    # REGROUPEMENT reviews par ticket
+    # --------------------
+    reviews_by_ticket_id = {}
+    for review in reviews:
+        reviews_by_ticket_id.setdefault(review.ticket_id, []).append(review)
 
-    review_items = [
-        {
-            "type": "REVIEW",
-            "object": review,
-            "time_created": review.time_created,
-        }
-        for review in reviews
-    ]
+    # --------------------
+    # Création des groupes (ticket + reviews)
+    # --------------------
+    feed_groups = []
+    for ticket in tickets:
+        ticket_reviews = reviews_by_ticket_id.get(ticket.id, [])
 
-    feed_items = sorted(
-        chain(ticket_items, review_items),
-        key=lambda item: item["time_created"],
-        reverse=True,
-    )
+        # Trier les reviews du ticket (la plus récente en premier)
+        ticket_reviews.sort(key=lambda r: r.time_created, reverse=True)
+
+        latest_review = ticket_reviews[0] if ticket_reviews else None
+
+        # Date d’activité : si une review existe, on prend la plus récente
+        activity_time = ticket.time_created
+        if latest_review and latest_review.time_created > activity_time:
+            activity_time = latest_review.time_created
+
+        feed_groups.append(
+            {
+                "ticket": ticket,
+                "reviews": ticket_reviews,  # toutes les reviews visibles liées à ce ticket
+                "latest_review": latest_review,  # la plus récente
+                "activity_time": activity_time,  # sert au tri du flux
+            }
+        )
+
+    # Trier les tickets selon l’activité (plus récent d’abord)
+    feed_groups.sort(key=lambda g: g["activity_time"], reverse=True)
 
     return render(
         request,
         "reviews/feed.html",
-        {"feed_items": feed_items},
+        {"feed_groups": feed_groups},
     )
