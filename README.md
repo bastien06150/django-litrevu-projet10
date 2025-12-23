@@ -60,6 +60,7 @@ pip install django
 
 ### Lancer le serveur de développement
 
+cd merchex
 python manage.py runserver
 
 Puis ouvrir dans un navigateur : http://127.0.0.1:8000/
