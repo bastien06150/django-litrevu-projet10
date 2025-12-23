@@ -16,7 +16,7 @@ def ticket_create(request):
             ticket = form.save(commit=False)
             ticket.user = request.user
             ticket.save()
-            return redirect("home")  # plus tard tu pourras rediriger vers le feed
+            return redirect("home")
     else:
         form = TicketForm()
     return render(
