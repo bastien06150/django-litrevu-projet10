@@ -32,10 +32,12 @@ Ce projet a été réalisé dans le cadre du **Projet 10 du parcours Développeu
 ---
 
 ## Installation et lancement du projet
+---
 
 ###  Cloner le dépôt
 
 git clone
+
 ---
 
 ### Créer un environnement virtuel
@@ -56,6 +58,8 @@ Sous macOS / Linux : source env/bin/activate
 ### Installer les dépendances
 
 pip install -r requirements.txt
+
+ou
  
 pip install django
 
